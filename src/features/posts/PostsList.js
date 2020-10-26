@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PostAuthor from './PostAuthor';
+import TimeAgo from './TimeAgo';
 
 
 const PostsList = () => {
@@ -10,6 +11,7 @@ const PostsList = () => {
         <article className = "post-excerpt" key = { post.id } >
             <h3 > { post.title } </h3> 
             <PostAuthor userId={post.userId}/>
+            <TimeAgo timestamp={post.date}/>
             <br/><br/>
             <p > { post.content.substring(0, 100) } </p> 
             <Link to = { `/posts/${post.id}` } className = 'button muted-button'>
