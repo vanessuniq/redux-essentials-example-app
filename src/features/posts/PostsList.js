@@ -28,7 +28,7 @@ const PostsList = () => {
         content = sortedPosts.map(post => ( 
             <article className = "post-excerpt" key = { post.id } >
                 <h3 > { post.title } </h3> 
-                <PostAuthor userId={post.userId}/>
+                <PostAuthor userId={post.user}/>
                 <TimeAgo timestamp={post.date}/>
                 <br/><br/>
                 <p > { post.content.substring(0, 100) } </p>

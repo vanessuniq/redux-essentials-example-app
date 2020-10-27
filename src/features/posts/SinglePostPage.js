@@ -23,7 +23,7 @@ const SinglePostPage = () => {
         <section>
             <article className='post'>
                 <h2>{post.title}</h2>
-                <PostAuthor userId={post.userId}/>
+                <PostAuthor userId={post.user}/>
                 <TimeAgo timestamp={post.date}/><br/><br/>
                 <p className='post-content'>{post.content}</p>
                 <ReactionButtons post={post}/>
