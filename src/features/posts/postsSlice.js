@@ -1,10 +1,10 @@
-import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { client } from '../../api/client'
 
-const reactions = { thumbsUp: 0, hooray: 0, heart: 0, rocket: 0, eyes: 0 }
 const initialState = {
     data: [],
     status: 'idle',
+    saving: 'idle',
     error: null
 }
 
@@ -12,25 +12,15 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async() => {
     const response = await client.get('/fakeApi/posts')
     return response.posts
 })
+
+export const addNewPost = createAsyncThunk('posts/addNewPost', async initialPost => {
+    const response = await client.post('/fakeApi/posts', { post: initialPost })
+    return response.post
+})
 const postsSlice = createSlice({
     name: 'posts',
     initialState,
     reducers: {
-        postAdded: {
-            reducer(state, action) {
-                state.data.push(action.payload)
-            },
-            prepare(postAttributes) {
-                return {
-                    payload: {
-                        id: nanoid(),
-                        date: new Date().toISOString(),
-                        reactions,
-                        ...postAttributes
-                    }
-                }
-            }
-        },
         postUpdated(state, action) {
             const existingPost = state.data.find(post => post.id === action.payload.id)
             if (existingPost) {
@@ -57,11 +47,22 @@ const postsSlice = createSlice({
         [fetchPosts.rejected]: (state, action) => {
             state.status = 'failed'
             state.error = action.error.message
+        },
+        [addNewPost.fulfilled]: (state, action) => {
+            state.error = ''
+            state.data.push(action.payload)
+        },
+        [addNewPost.pending]: (state, action) => {
+            state.saving = 'saving'
+        },
+        [addNewPost.rejected]: (state, action) => {
+            state.saving = 'idle'
+            state.error = `Failed saving your post: ${action.error.message}`
         }
     }
 })
 
-export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions
+export const { postUpdated, reactionAdded } = postsSlice.actions
 
 export default postsSlice.reducer
 

@@ -1,14 +1,18 @@
 import React, {useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {postAdded} from './postsSlice'
+import {addNewPost} from './postsSlice'
 
 const AddPostForm = () => {
     const [postAttributes, setPostAttributes] = useState({
         title: '',
         content: '',
-        userId: ''
+        user: ''
     });
-    const canSave = Boolean(postAttributes.title) && Boolean(postAttributes.content) && Boolean(postAttributes.userId)
+    const {title, content, user} = postAttributes
+    const savingStatus = useSelector(state => state.posts.saving)
+    const error = useSelector(state => state.posts.error)
+
+    const canSave = [title, content, user].every(Boolean)
 
     const dispatch = useDispatch()
     const users = useSelector(state => state.users)
@@ -17,14 +21,12 @@ const AddPostForm = () => {
         ...postAttributes,
         [event.target.name]: event.target.value
     })
-
-    const onSavePostClicked = () => {
+    
+    const onSavePostClicked = async () => {
         if (canSave) {
-            dispatch(postAdded(postAttributes))
-
-        setPostAttributes({...postAttributes, title: '', content: '', userId: ''})
-        } else {
-            alert('Author, title and content fields should not be empty')
+            dispatch(addNewPost(postAttributes));
+            setPostAttributes({...postAttributes, title: '', content: '', user: ''}) 
+            
         }
     }
 
@@ -34,6 +36,7 @@ const AddPostForm = () => {
     return (
         <section>
             <h2>Add a new Post</h2>
+            <span style={{color: 'red'}}>{error}</span>
             <form >
                 <label htmlFor="title">Post Title:</label>
                 <input 
@@ -44,7 +47,7 @@ const AddPostForm = () => {
                     onChange={onInputChanged}
                 />
                 <label htmlFor="userId">Author:</label>
-                <select name="userId" id="userId" value={postAttributes.userId} onChange={onInputChanged}>
+                <select name="user" id="userId" value={postAttributes.user} onChange={onInputChanged}>
                     <option value=""></option>
                     {usersOptions}
                 </select>
@@ -55,7 +58,9 @@ const AddPostForm = () => {
                     value={postAttributes.content}
                     onChange={onInputChanged}
                 />
-                <button type='button' onClick={onSavePostClicked} disabled={!canSave}>Save Post</button>
+                <button type='button' onClick={onSavePostClicked} disabled={!canSave || savingStatus === 'saving'}>
+                    Save Post
+                </button>
             </form>
         </section>
     );
