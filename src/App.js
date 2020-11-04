@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom'
 
 import { Navbar } from './app/Navbar'
+import NotificationsList from './features/notifications/NotificationsList'
 import AddPostForm from './features/posts/AddPostForm'
 import EditPostForm from './features/posts/EditPostForm'
 import PostsList from './features/posts/PostsList'
@@ -20,6 +21,8 @@ function App() {
       <Navbar />
       <div className="App">
         <Switch>
+        <Route exact path='/notifications' component={NotificationsList}/>
+        
           <Route
             exact
             path="/"
